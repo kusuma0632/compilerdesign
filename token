@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#define MAX_TOKEN_LENGTH 100
+int is_keyword(const char *token) {
+    const char *keywords[] = {"int", "float", "return", "if", "else", "while", "for", "void"};
+    for (int i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++) {
+        if (strcmp(token, keywords[i]) == 0) return 1;
+    }
+    return 0;
+}
+void identify_tokens(const char *source) {
+    char token[MAX_TOKEN_LENGTH];
+    int i = 0, j = 0;
+    while (source[i] != '\0') {
+        if (isspace(source[i])) {
+            i++;
+            continue;
+        }
+        if (isalpha(source[i]) || source[i] == '_') {
+            j = 0;
+            while (isalnum(source[i]) || source[i] == '_') {
+                token[j++] = source[i++];
+            }
+            token[j] = '\0';
+
+            if (is_keyword(token)) {
+                printf("Keyword: %s\n", token);
+            } else {
+                printf("Identifier: %s\n", token);
+            }
+        }
+        else if (isdigit(source[i])) {
+            j = 0;
+            while (isdigit(source[i])) {
+                token[j++] = source[i++];
+            }
+            token[j] = '\0';
+            printf("Number: %s\n", token);
+        }
+        else if (strchr("+-*/%<=>!&|", source[i])) {
+            j = 0;
+            while (strchr("+-*/%<=>!&|", source[i])) {
+                token[j++] = source[i++];
+            }
+            token[j] = '\0';
+            printf("Operator: %s\n", token);
+        }
+        else if (strchr("(){};[],", source[i])) {
+            j = 0;
+            while (strchr("(){};[],", source[i])) {
+                token[j++] = source[i++];
+            }
+            token[j] = '\0';
+            printf("Special Symbol: %s\n", token);
+        }
+        else {
+            i++;
+        }
+    }
+}
+
+int main() {
+    const char *source_code = "int main() { int x = 10; float y = 20.5; return x + y; }";
+    identify_tokens(source_code);
+    return 0;
+}
